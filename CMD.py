@@ -1,9 +1,25 @@
 import ctypes
+import os
 
 class CMD:
-    def __init__(self, dll_path='CMDHidApi64.dll'):
-        self.dll = ctypes.CDLL(dll_path)
+    def __init__(self):
+
+        # Full path to the CMDHidApi.dll, including spaces in the directory names
+        dll_path = r'C:\Users\Mark Haddad\Desktop\Workspaces\NipponController\CMDHidApi.dll'
+
+        # Check if the DLL exists
+        if not os.path.isfile(dll_path):
+            print(f"Error: DLL not found at {dll_path}")
+        else:
+            try:
+                # Load the DLL
+                self.dll = ctypes.CDLL(dll_path)
+                print("DLL loaded successfully.")
+            except OSError as e:
+                print(f"Error loading DLL: {e}")
+
         self._setup_functions()
+
 
     def _setup_functions(self):
         self.dll.GetCommanderHIDnumber.argtypes = []
