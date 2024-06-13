@@ -4,7 +4,8 @@ import os
 class CMD:
     def __init__(self):
 
-        dll_path = r'C:\Users\Mark Haddad\Desktop\Workspaces\NipponController\CMDHidApi64.dll'
+        #dll_path = r'C:\Users\Mark Haddad\Desktop\Workspaces\NipponController\CMDHidApi64.dll'
+        dll_path = r'C:\Users\abh36\OneDrive\Desktop\NipponPyController\NipponController\CMDHidApi64.dll'
 
         if not os.path.isfile(dll_path):
             print(f"Error: DLL not found at {dll_path}")
@@ -51,14 +52,10 @@ class CMD:
         return self.dll.CloseCommanderHID(HidHandle)
 
     def SendReceiveCommanderHID(self, HidHandle, command, reply):
-        # Ensure command and reply are padded with NullChar and null-terminated
         padded_command = (command + "\x00").ljust(63, "\x00")
         padded_reply = ctypes.create_string_buffer(63)
         
-        # Call the DLL function with padded command and reply
         result = self.dll.SendReceiveCommanderHID(HidHandle, padded_command.encode('utf-8'), padded_reply)
-        
-        # Copy the reply to the provided buffer
         reply.value = padded_reply.raw
         
         return result

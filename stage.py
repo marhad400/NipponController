@@ -22,12 +22,25 @@ def setup_position():
     return setup_complete
 
 def snake_loop():
-    send_command("Y10000")
+    x_pos = -40000
+    y_pos = -40000
 
-    move_complete("PY", 10000)
-
-    if move_complete:
-        send_command("X10000")
+    for i in range(9):
+        if move_complete:
+            x_move_cmd = "X" + str(x_pos)
+            y_move_cmd = "Y" + str(y_pos)
+            send_command(y_move_cmd)
+            send_command(x_move_cmd)
+            move_complete("PY", y_pos)
+        # for j in range(9):
+        #     if move_complete:
+        #         x_move_cmd = "X" + str(x_pos)
+        #         y_move_cmd = "Y" + str(y_pos)
+        #         send_command(y_move_cmd)
+        #         send_command(x_move_cmd)
+        #         move_complete("PX", x_pos)
+        #         x_pos += 3000
+            y_pos += 3000
   
 def send_command(command):
     reply = ctypes.create_string_buffer(63)
