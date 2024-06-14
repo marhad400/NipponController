@@ -13,21 +13,33 @@ print(f"Open HID result: {result}, handle: {hid_handle}")
 
 def setup_position():
     send_command("EO=3")
-    send_command("X-40000")
+    send_command("X-30000")
     send_command("Y1000")
 
-    setup_complete = move_complete("PX", -40000)
+    setup_complete = move_complete("PX", -30000)
 
     print(f'Complete? {setup_complete}')
     return setup_complete
 
 def snake_loop():
-    send_command("Y10000")
+    x_pos = -30000
+    y_pos = 1000
 
-    move_complete("PY", 10000)
-
-    if move_complete:
-        send_command("X10000")
+    # for i in range(9):
+    #     x_move_cmd = "X" + str(x_pos)
+    #     y_move_cmd = "Y" + str(y_pos)
+    #     send_command(y_move_cmd)
+    #     send_command(x_move_cmd)
+    #     move_complete("PY", y_pos)
+    for j in range(9):
+        if move_complete:
+            x_move_cmd = "X" + str(x_pos)
+            y_move_cmd = "Y" + str(y_pos)
+            send_command(y_move_cmd)
+            send_command(x_move_cmd)
+            move_complete("PX", x_pos)
+            x_pos += 3000
+       # y_pos += 3000
   
 def send_command(command):
     reply = ctypes.create_string_buffer(63)
