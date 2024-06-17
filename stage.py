@@ -14,32 +14,46 @@ print(f"Open HID result: {result}, handle: {hid_handle}")
 def setup_position():
     send_command("EO=3")
     send_command("X-30000")
-    send_command("Y1000")
+    send_command("Y-50000")
 
-    setup_complete = move_complete("PX", -30000)
+    setup_complete_x = move_complete("PX", -30000)
+    setup_complete_y = move_complete("PY", -50000)
+
+    setup_complete = setup_complete_x and setup_complete_y
 
     print(f'Complete? {setup_complete}')
     return setup_complete
 
 def snake_loop():
-    x_pos = -30000
-    y_pos = 1000
+    x_pos = -50000
+    y_pos = -50000
+    row = 0
 
-    # for i in range(9):
-    #     x_move_cmd = "X" + str(x_pos)
-    #     y_move_cmd = "Y" + str(y_pos)
-    #     send_command(y_move_cmd)
-    #     send_command(x_move_cmd)
-    #     move_complete("PY", y_pos)
-    for j in range(9):
-        if move_complete:
+    for i in range(9):
+        for j in range(9):
             x_move_cmd = "X" + str(x_pos)
             y_move_cmd = "Y" + str(y_pos)
-            send_command(y_move_cmd)
             send_command(x_move_cmd)
-            move_complete("PX", x_pos)
-            x_pos += 3000
-       # y_pos += 3000
+            if move_complete("PX", x_pos):
+                send_command(y_move_cmd)
+                move_complete("PY", y_pos)
+            
+            if row % 2 == 0:
+                x_pos += 11340
+            else:
+                x_pos -= 11340
+            y_pos += 0
+        
+        x_move_cmd = "X" + str(x_pos)
+        y_move_cmd = "Y" + str(y_pos)
+        send_command(x_move_cmd)
+        if move_complete("PX", x_pos):
+            send_command(y_move_cmd)
+            move_complete("PY", y_pos)
+        x_pos += 0
+        y_pos += 11340
+        row += 1
+
   
 def send_command(command):
     reply = ctypes.create_string_buffer(63)
