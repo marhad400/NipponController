@@ -56,6 +56,8 @@ class CMD:
         padded_reply = ctypes.create_string_buffer(63)
         
         result = self.dll.SendReceiveCommanderHID(HidHandle, padded_command.encode('utf-8'), padded_reply)
+        
+        # Copy the reply to the provided buffer
         reply.value = padded_reply.raw
         
         return result
