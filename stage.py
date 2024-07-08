@@ -32,21 +32,51 @@ def move_plate_out():
 
 def setup_position():
     send_command("EO=3")
-    send_command("X-40000")
-    send_command("Y1000")
+    send_command(f"X{HOME_X}")
+    send_command(f"Y{HOME_Y}")
+    send_command("HSPDX=20000")
+    send_command("HSPDY=20000")
 
-    setup_complete = move_complete("PX", -40000)
+    setup_complete_x = move_complete("PX", HOME_X)
+    setup_complete_y = move_complete("PY", HOME_Y)
+
+    setup_complete = setup_complete_x and setup_complete_y
 
     print(f'Complete? {setup_complete}')
     return setup_complete
 
 def snake_loop():
-    send_command("Y10000")
+    x_pos = L1_X
+    y_pos = L1_Y
+    row = 0
 
-    move_complete("PY", 10000)
+    for i in range(9):
+        for j in range(9):
+            x_move_cmd = "X" + str(x_pos)
+            y_move_cmd = "Y" + str(y_pos)
+            send_command(x_move_cmd)
+            if move_complete("PX", x_pos):
+                send_command(y_move_cmd)
+                move_complete("PY", y_pos)
+            
+            if row % 2 == 0:
+                x_pos += 11340
+            else:
+                x_pos -= 11340
+            y_pos += 0
+        
+        x_move_cmd = "X" + str(x_pos)
+        y_move_cmd = "Y" + str(y_pos)
+        send_command(x_move_cmd)
+        if move_complete("PX", x_pos):
+            send_command(y_move_cmd)
+            move_complete("PY", y_pos)
+        x_pos += 0
+        y_pos += 11340
+        row += 1
 
-    if move_complete:
-        send_command("X10000")
+    setup_position()
+
   
 def send_command(command):
     reply = ctypes.create_string_buffer(63)
