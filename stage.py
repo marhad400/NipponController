@@ -10,41 +10,54 @@ print(f"HID Name: {hid_name}")
 result, hid_handle = cmd.OpenCommanderHID(hid_name)
 print(f"Open HID result: {result}, handle: {hid_handle}")
 
-HOME_X = -30000
-HOME_Y = -50000
-
-L1_X = -50000
-L1_Y = -50000
-
 OUT_X = 30000
 OUT_Y = 50000
 
-def test_needle_pos():
-    home = setup_position()
-
-    if home:
-        send_command(f"X{L1_X}")
-        send_command(f"Y{L1_Y}")
-
-def move_plate_out():
-    send_command(f"X{OUT_X}")
-    send_command(f"Y{OUT_Y}")
+# *****Home Position = Needles Over Waste*****
+HOME_X = -20000
+HOME_Y = 50000
+HOME_Z = -10000
 
 def setup_position():
-    send_command("EO=3")
+    send_command("EO=7")
     send_command(f"X{HOME_X}")
     send_command(f"Y{HOME_Y}")
+    send_command(f"Z{HOME_Z}")
+    
     send_command("HSPDX=20000")
     send_command("HSPDY=20000")
 
     setup_complete_x = move_complete("PX", HOME_X)
     setup_complete_y = move_complete("PY", HOME_Y)
+    setup_complete_z = move_complete("PZ", HOME_Z)
 
-    setup_complete = setup_complete_x and setup_complete_y
+    setup_complete =  setup_complete_x and setup_complete_y and setup_complete_z
 
     print(f'Complete? {setup_complete}')
     return setup_complete
 
+
+# ******Needle Position over A1*********
+L1_X = -45000
+L1_Y = 150000
+L1_Z = 20000
+
+def test_needle_pos():
+    home = setup_position()
+
+    if home:
+        send_command(f"Z{L1_Z}")
+        send_command(f"X{L1_X}")
+        send_command(f"Y{L1_Y}")
+
+
+# ****Move Plate to the Outmost Position ******
+def move_plate_out():
+    send_command(f"X{OUT_X}")
+    send_command(f"Y{OUT_Y}")
+
+
+# *******Main Dispensing Pattern ********
 def snake_loop():
     x_pos = L1_X
     y_pos = L1_Y
@@ -103,14 +116,14 @@ def move_complete(pos_command, end_pos):
 
 
 ####### MAIN ########
-# setup_complete = setup_position()
+setup_complete = setup_position()
 
 # if setup_complete:
 #     snake_loop()
 
 # move_plate_out()
 
-test_needle_pos()
+# test_needle_pos()
 
 result = cmd.CloseCommanderHID(hid_handle)
 print(f"Close HID result: {result}")
